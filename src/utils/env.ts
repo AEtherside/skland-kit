@@ -331,5 +331,10 @@ export async function getDid(storage: Storage<string>): Promise<string> {
     throw new Error('did计算失败，请联系作者')
   }
 
-  return `B${resp.detail.deviceId}`
+  const did = `B${resp.detail.deviceId}`
+
+  // 保存 did 到 storage
+  await storage.setItem(STORAGE_DID_KEY, did)
+
+  return did
 }

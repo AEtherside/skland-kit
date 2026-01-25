@@ -1,6 +1,6 @@
 import type { $Fetch } from 'ofetch'
 import type { Driver, Storage } from 'unstorage'
-import type { AttendanceAwards, AttendanceStatus } from './game'
+import type { AttendanceAwards, AttendanceStatus, EndfieldAttendanceRecordResponse, EndfieldAttendanceResponse } from './game'
 import type { AppBindingList, PlayerInfo } from './player'
 
 export interface ClientConfig {
@@ -117,4 +117,14 @@ export interface ClientGame {
    * @param body 签到请求体
    */
   attendance: (body: { uid: string, gameId: string }) => Promise<AttendanceAwards>
+  /**
+   * 获取终末地签到记录
+   * @param gameRole - 格式: {gameId}_{roleId}_{serverId}，例如 "3_1766760475_1"
+   */
+  getEndfieldAttendanceRecord: (gameRole: string) => Promise<EndfieldAttendanceRecordResponse>
+  /**
+   * 终末地签到
+   * @param gameRole - 格式: {gameId}_{roleId}_{serverId}，例如 "3_1766760475_1"
+   */
+  endfieldAttendance: (gameRole: string) => Promise<EndfieldAttendanceResponse>
 }
