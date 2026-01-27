@@ -199,6 +199,17 @@ export interface ManufactureFormulaInfo {
   costPoint: number
 }
 
+export interface AppBindingRole {
+  serverId: string
+  serverType: string
+  serverName: string
+  roleId: string
+  nickname: string
+  level: number
+  isDefault: boolean
+  isBanned: boolean
+}
+
 export interface AppBindingPlayer {
   uid: string
   isOfficial: boolean
@@ -207,6 +218,10 @@ export interface AppBindingPlayer {
   channelName: string
   nickName: string
   isDelete: boolean
+  gameName: string
+  gameId: number
+  roles: AppBindingRole[]
+  defaultRole: AppBindingRole | null
 }
 
 export interface AppBindingList {
