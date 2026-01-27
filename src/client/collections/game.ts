@@ -88,7 +88,7 @@ export function buildGameCollection(): ClientGame {
         '/api/v1/game/attendance',
         {
           method: 'POST',
-          query: opt,
+          body: opt,
           headers: { 'content-type': 'application/json' },
         },
         '执行签到错误',
