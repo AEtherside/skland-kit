@@ -1,4 +1,4 @@
-export interface AttendanceStatus {
+export interface ArknightsAttendanceStatus {
   currentTs: string
   calendar: {
     resourceId: string
@@ -14,7 +14,7 @@ export interface AttendanceStatus {
     ts: string
   }[]
   resourceInfoMap: {
-    [key: string]: {
+    [resourceId: string]: {
       id: string
       name: string
       type: string
@@ -22,7 +22,30 @@ export interface AttendanceStatus {
   }
 }
 
-export interface AttendanceAwards {
+export interface EndfieldAttendanceStatus {
+  currentTs: string
+  calendar: {
+    available: boolean
+    awardId: string
+    done: boolean
+  }[]
+  first: {
+    available: boolean
+    awardId: string
+    done: boolean
+  }[]
+  hasToday: boolean
+  resourceInfoMap: {
+    [awardId: string]: {
+      count: number
+      icon: string
+      id: string
+      name: string
+    }
+  }
+}
+
+export interface ArknightsAttendanceAwards {
   ts: number
   awards: {
     resource: {
@@ -32,4 +55,24 @@ export interface AttendanceAwards {
     }
     count: number
   }[]
+}
+
+export interface EndfieldAttendanceAwards {
+  awardIds: {
+    id: string
+    type: number
+  }[]
+  resourceInfoMap: {
+    [awardId: string]: {
+      count: number
+      icon: string
+      id: string
+      name: string
+    }
+  }
+  tomorrowAwardIds: {
+    id: string
+    type: number
+  }[]
+  ts: string
 }

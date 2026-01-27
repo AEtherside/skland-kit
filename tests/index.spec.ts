@@ -76,7 +76,27 @@ describe('skland-kit client', () => {
 
     const binding = await client.collections.player.getBinding()
 
+    // Check that list is an array containing objects with expected structure
     expect(binding).toHaveProperty('list', expect.any(Array))
+    expect(binding.list.length).toBeGreaterThan(0)
+    expect(binding.list[0]).toEqual(expect.objectContaining({
+      appCode: expect.any(String),
+      appName: expect.any(String),
+      bindingList: expect.any(Array),
+    }))
+
+    // Check that bindingList contains objects with expected structure
+    const firstBinding = binding.list[0]
+    if (firstBinding.bindingList.length > 0) {
+      expect(firstBinding.bindingList[0]).toEqual(expect.objectContaining({
+        channelMasterId: expect.any(String),
+        channelName: expect.any(String),
+        gameId: expect.any(Number),
+        gameName: expect.any(String),
+        uid: expect.any(String),
+      }))
+    }
+
   })
 
   it('should get player info', async () => {
@@ -91,18 +111,73 @@ describe('skland-kit client', () => {
     expect(info).toHaveProperty('currentTs')
   })
 
-  it('should get attendance status', async () => {
+  it('should get arknights attendance status', async () => {
     const client = createClient()
 
     const res = await client.collections.hypergryph.grantAuthorizeCode(import.meta.env.VITE_SKLAND_TOKEN!)
 
     await client.signIn(res.code)
 
-    const data = await client.collections.game.getAttendanceStatus({ uid: import.meta.env.VITE_SKLAND_UID!, gameId: '1' })
+    const data = await client.collections.game.getAttendanceStatus({ uid: import.meta.env.VITE_SKLAND_UID!, gameId: 1 })
 
     expect(data).toHaveProperty('currentTs')
     expect(data).toHaveProperty('calendar')
     expect(data).toHaveProperty('records')
     expect(data).toHaveProperty('resourceInfoMap')
+  })
+
+  it('should get endfield attendance status', async () => {
+    const client = createClient()
+
+    const res = await client.collections.hypergryph.grantAuthorizeCode(import.meta.env.VITE_SKLAND_TOKEN!)
+
+    await client.signIn(res.code)
+
+    const data = await client.collections.game.getAttendanceStatus({
+      gameId: 3,
+      roleId: import.meta.env.VITE_SKLAND_ROLE_ID!,
+      serverId: import.meta.env.VITE_SKLAND_SERVER_ID!,
+    })
+
+    expect(data).toHaveProperty('currentTs')
+    expect(data).toHaveProperty('calendar')
+    expect(data).toHaveProperty('first')
+    expect(data).toHaveProperty('hasToday')
+    expect(data).toHaveProperty('resourceInfoMap')
+  })
+})
+
+
+describe.runIf(!!process.env.ATTENDANCE)('do attendance', () => {
+
+  it('should do arknights attendance', async () => {
+    const client = createClient()
+
+    const res = await client.collections.hypergryph.grantAuthorizeCode(import.meta.env.VITE_SKLAND_TOKEN!)
+
+    await client.signIn(res.code)
+
+    const data = await client.collections.game.attendance({ uid: import.meta.env.VITE_SKLAND_UID!, gameId: 1 })
+    expect(data).toHaveProperty('ts')
+    expect(data).toHaveProperty('awards')
+  })
+
+  it('should do endfield attendance', async () => {
+    const client = createClient()
+
+    const res = await client.collections.hypergryph.grantAuthorizeCode(import.meta.env.VITE_SKLAND_TOKEN!)
+
+    await client.signIn(res.code)
+
+    const data = await client.collections.game.attendance({
+      gameId: 3,
+      roleId: import.meta.env.VITE_SKLAND_ROLE_ID!,
+      serverId: import.meta.env.VITE_SKLAND_SERVER_ID!,
+    })
+
+    expect(data).toHaveProperty('awardIds')
+    expect(data).toHaveProperty('resourceInfoMap')
+    expect(data).toHaveProperty('tomorrowAwardIds')
+    expect(data).toHaveProperty('ts')
   })
 })

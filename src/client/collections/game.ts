@@ -1,5 +1,5 @@
 import type { FetchOptions } from 'ofetch'
-import type { AttendanceAwards, AttendanceStatus, ClientGame, SklandResponse } from '../../types'
+import type { ArknightsAttendanceAwards, ArknightsAttendanceStatus, ClientGame, EndfieldAttendanceStatus, SklandResponse } from '../../types'
 import { signRequest } from '../../utils/signature'
 import { useClientContext } from '../ctx'
 
@@ -15,6 +15,7 @@ export function buildGameCollection(): ClientGame {
       ...options,
       onRequest: ctx => signRequest(ctx, storage),
       onResponseError(ctx) {
+        console.error(ctx.response._data)
         throw new Error(`【skland-kit】${errorMessage}`, { cause: ctx.response._data })
       },
     })
@@ -25,22 +26,79 @@ export function buildGameCollection(): ClientGame {
 
     return res
   }
-  return {
-    async getAttendanceStatus(query) {
-      const res = await fetchGame<AttendanceStatus>(
-        '/api/v1/game/attendance',
-        { query },
+  async function getAttendanceStatus(
+    opt: { uid: string, gameId: number },
+  ): Promise<ArknightsAttendanceStatus>
+  async function getAttendanceStatus(
+    opt: { gameId: number, roleId: string, serverId: number },
+  ): Promise<EndfieldAttendanceStatus>
+  async function getAttendanceStatus(
+    opt: { uid: string, gameId: number } | { gameId: number, roleId: string, serverId: number },
+  ): Promise<ArknightsAttendanceStatus | EndfieldAttendanceStatus> {
+    if ('roleId' in opt && 'serverId' in opt) {
+      const res = await fetchGame<EndfieldAttendanceStatus>(
+        '/api/v1/game/endfield/attendance',
+        {
+          headers: {
+            'content-type': 'application/json',
+            'sk-game-role': `${opt.gameId}_${opt.roleId}_${opt.serverId}`,
+          },
+        },
         '获取签到状态错误',
       )
       return res.data
-    },
-    async attendance(body) {
-      const res = await fetchGame<AttendanceAwards>(
+    }
+    else {
+      const res = await fetchGame<ArknightsAttendanceStatus>(
         '/api/v1/game/attendance',
-        { method: 'POST', body },
+        { query: opt },
+        '获取签到状态错误',
+      )
+      return res.data
+    }
+  }
+
+  async function attendance(
+    opt: { uid: string, gameId: number },
+  ): Promise<ArknightsAttendanceAwards>
+  async function attendance(
+    opt: { gameId: number, roleId: string, serverId: number },
+  ): Promise<ArknightsAttendanceAwards>
+  async function attendance(
+    opt: { uid: string, gameId: number } | { gameId: number, roleId: string, serverId: number },
+  ): Promise<ArknightsAttendanceAwards> {
+    if ('roleId' in opt && 'serverId' in opt) {
+      const res = await fetchGame<ArknightsAttendanceAwards>(
+        '/api/v1/game/endfield/attendance',
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'sk-game-role': `${opt.gameId}_${opt.roleId}_${opt.serverId}`,
+            'referer': 'https://game.skland.com/',
+            'origin': 'https://game.skland.com/',
+          },
+        },
         '执行签到错误',
       )
       return res.data
-    },
+    }
+    else {
+      const res = await fetchGame<ArknightsAttendanceAwards>(
+        '/api/v1/game/attendance',
+        {
+          method: 'POST',
+          query: opt,
+          headers: { 'content-type': 'application/json' },
+        },
+        '执行签到错误',
+      )
+      return res.data
+    }
+  }
+
+  return {
+    getAttendanceStatus,
+    attendance,
   }
 }

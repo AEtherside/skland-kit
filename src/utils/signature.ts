@@ -3,6 +3,7 @@ import type { Storage } from 'unstorage'
 import { SERVER_TIMESTAMP_OFFSET, STORAGE_CREDENTIAL_KEY, STORAGE_OAUTH_TOKEN_KEY } from '../constants'
 import { assert } from './assert'
 import { hmacSha256, md5 } from './crypto'
+import { getDid } from './env'
 
 function parseURL(ctx: FetchContext): URL {
   const url = typeof ctx.request === 'string' ? ctx.request : ctx.request.url
@@ -28,7 +29,7 @@ export async function signRequest(ctx: FetchContext, storage: Storage<string>): 
   const signatureHeaders = {
     platform: '1',
     timestamp,
-    dId: '',
+    dId: await getDid(storage),
     vName: '1.21.0',
   }
 

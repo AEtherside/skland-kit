@@ -1,6 +1,6 @@
 import type { $Fetch } from 'ofetch'
 import type { Driver, Storage } from 'unstorage'
-import type { AttendanceAwards, AttendanceStatus } from './game'
+import type { ArknightsAttendanceAwards, ArknightsAttendanceStatus, EndfieldAttendanceStatus } from './game'
 import type { AppBindingList, PlayerInfo } from './player'
 
 export interface ClientConfig {
@@ -111,10 +111,41 @@ export interface ClientGame {
   /**
    * 获取签到状态
    */
-  getAttendanceStatus: (query: { uid: string, gameId: string }) => Promise<AttendanceStatus>
+  getAttendanceStatus: {
+    /**
+     * 获取明日方舟签到状态
+     */
+    (opt: {
+      uid: string
+      gameId: number
+    }): Promise<ArknightsAttendanceStatus>
+    /**
+     * 获取终末地签到状态
+     */
+    (opt: {
+      gameId: number
+      roleId: string
+      serverId: number
+    }): Promise<EndfieldAttendanceStatus>
+  }
   /**
    * 执行签到
-   * @param body 签到请求体
    */
-  attendance: (body: { uid: string, gameId: string }) => Promise<AttendanceAwards>
+  attendance: {
+    /**
+     * 执行明日方舟签到
+     */
+    (opt: {
+      uid: string
+      gameId: number
+    }): Promise<ArknightsAttendanceAwards>
+    /**
+     * 执行终末地签到
+     */
+    (opt: {
+      gameId: number
+      roleId: string
+      serverId: number
+    }): Promise<ArknightsAttendanceAwards>
+  }
 }
