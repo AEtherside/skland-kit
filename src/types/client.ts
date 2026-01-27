@@ -145,7 +145,7 @@ export interface ClientGame {
     (opt: {
       gameId: number
       roleId: string
-      serverId: number
+      serverId: string
     }): Promise<EndfieldAttendanceAwards>
   }
 }
