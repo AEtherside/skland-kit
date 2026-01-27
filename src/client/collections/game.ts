@@ -30,10 +30,10 @@ export function buildGameCollection(): ClientGame {
     opt: { uid: string, gameId: number },
   ): Promise<ArknightsAttendanceStatus>
   async function getAttendanceStatus(
-    opt: { gameId: number, roleId: string, serverId: number },
+    opt: { gameId: number, roleId: string, serverId: string },
   ): Promise<EndfieldAttendanceStatus>
   async function getAttendanceStatus(
-    opt: { uid: string, gameId: number } | { gameId: number, roleId: string, serverId: number },
+    opt: { uid: string, gameId: number } | { gameId: number, roleId: string, serverId: string },
   ): Promise<ArknightsAttendanceStatus | EndfieldAttendanceStatus> {
     if ('roleId' in opt && 'serverId' in opt) {
       const res = await fetchGame<EndfieldAttendanceStatus>(
