@@ -1,6 +1,6 @@
 import type { $Fetch } from 'ofetch'
 import type { Driver, Storage } from 'unstorage'
-import type { ArknightsAttendanceAwards, ArknightsAttendanceStatus, EndfieldAttendanceStatus } from './game'
+import type { ArknightsAttendanceAwards, ArknightsAttendanceStatus, EndfieldAttendanceAwards, EndfieldAttendanceStatus } from './game'
 import type { AppBindingList, PlayerInfo } from './player'
 
 export interface ClientConfig {
@@ -146,6 +146,6 @@ export interface ClientGame {
       gameId: number
       roleId: string
       serverId: number
-    }): Promise<ArknightsAttendanceAwards>
+    }): Promise<EndfieldAttendanceAwards>
   }
 }

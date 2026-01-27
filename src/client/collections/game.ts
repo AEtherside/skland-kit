@@ -1,5 +1,5 @@
 import type { FetchOptions } from 'ofetch'
-import type { ArknightsAttendanceAwards, ArknightsAttendanceStatus, ClientGame, EndfieldAttendanceStatus, SklandResponse } from '../../types'
+import type { ArknightsAttendanceAwards, ArknightsAttendanceStatus, ClientGame, EndfieldAttendanceAwards, EndfieldAttendanceStatus, SklandResponse } from '../../types'
 import { signRequest } from '../../utils/signature'
 import { useClientContext } from '../ctx'
 
@@ -63,12 +63,12 @@ export function buildGameCollection(): ClientGame {
   ): Promise<ArknightsAttendanceAwards>
   async function attendance(
     opt: { gameId: number, roleId: string, serverId: number },
-  ): Promise<ArknightsAttendanceAwards>
+  ): Promise<EndfieldAttendanceAwards>
   async function attendance(
     opt: { uid: string, gameId: number } | { gameId: number, roleId: string, serverId: number },
-  ): Promise<ArknightsAttendanceAwards> {
+  ): Promise<ArknightsAttendanceAwards | EndfieldAttendanceAwards> {
     if ('roleId' in opt && 'serverId' in opt) {
-      const res = await fetchGame<ArknightsAttendanceAwards>(
+      const res = await fetchGame<EndfieldAttendanceAwards>(
         '/api/v1/game/endfield/attendance',
         {
           method: 'POST',
