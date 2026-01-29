@@ -15,7 +15,6 @@ export function buildGameCollection(): ClientGame {
       ...options,
       onRequest: ctx => signRequest(ctx, storage),
       onResponseError(ctx) {
-        console.error(ctx.response._data)
         throw new Error(`【skland-kit】${errorMessage}`, { cause: ctx.response._data })
       },
     })
@@ -79,7 +78,7 @@ export function buildGameCollection(): ClientGame {
             'origin': 'https://game.skland.com/',
           },
         },
-        '执行签到错误',
+        '获取签到信息错误',
       )
       return res.data
     }
