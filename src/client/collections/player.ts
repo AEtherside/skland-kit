@@ -25,6 +25,19 @@ export function buildPlayerCollection(): ClientPlayer {
     return res
   }
   return {
+    async getEndfieldDetails({ ...query }) {
+      const res = await fetchPlayer<any>(
+        '/api/v1/game/endfield/card/detail',
+        {
+          query,
+          headers: {
+            'sk-game-role': `${3}_${query.roleId}_${query.serverId}`,
+          },
+        },
+        '获取终末地玩家详情错误',
+      )
+      return res.data
+    },
     async getBinding() {
       const res = await fetchPlayer<AppBindingList>(
         '/api/v1/game/player/binding',

@@ -4,7 +4,7 @@ interface ImportMetaEnv {
   /// ↓ for endfield test
 
   VITE_SKLAND_ROLE_ID?: string
-  VITE_SKLAND_SERVER_ID?: number
+  VITE_SKLAND_SERVER_ID?: string
 }
 
 interface ImportMeta {

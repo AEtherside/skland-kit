@@ -1,7 +1,7 @@
 import type { $Fetch } from 'ofetch'
 import type { Driver, Storage } from 'unstorage'
 import type { ArknightsAttendanceAwards, ArknightsAttendanceStatus, EndfieldAttendanceAwards, EndfieldAttendanceStatus } from './game'
-import type { AppBindingList, PlayerInfo } from './player'
+import type { AppBindingList, EndfieldDetails, PlayerInfo } from './player'
 
 export interface ClientConfig {
   baseURL?: string
@@ -105,6 +105,14 @@ export interface ClientScore {
 export interface ClientPlayer {
   getBinding: () => Promise<AppBindingList>
   getInfo: (query: { uid: string }) => Promise<PlayerInfo>
+  getEndfieldDetails: (query: {
+    roleId: string
+    serverId: string
+    /**
+     * @todo: 国服森空岛的接口好像无法控制，只有简中和传 'sk-language' 是英文
+     */
+    language?: unknown
+  }) => Promise<{ detail: EndfieldDetails }>
 }
 
 export interface ClientGame {

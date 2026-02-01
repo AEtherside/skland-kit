@@ -96,7 +96,6 @@ describe('skland-kit client', () => {
         uid: expect.any(String),
       }))
     }
-
   })
 
   it('should get player info', async () => {
@@ -109,6 +108,23 @@ describe('skland-kit client', () => {
     const info = await client.collections.player.getInfo({ uid: import.meta.env.VITE_SKLAND_UID! })
 
     expect(info).toHaveProperty('currentTs')
+  })
+
+  it('should get endfield player details', async () => {
+    const client = createClient()
+
+    const res = await client.collections.hypergryph.grantAuthorizeCode(import.meta.env.VITE_SKLAND_TOKEN!)
+
+    await client.signIn(res.code)
+
+    const info = await client.collections.player.getEndfieldDetails({
+      roleId: import.meta.env.VITE_SKLAND_ROLE_ID!,
+      serverId: import.meta.env.VITE_SKLAND_SERVER_ID!,
+    })
+
+    expect(info).toHaveProperty('detail')
+
+    expect(info.detail).toHaveProperty('currentTs')
   })
 
   it('should get arknights attendance status', async () => {
@@ -147,9 +163,7 @@ describe('skland-kit client', () => {
   })
 })
 
-
 describe.runIf(!!process.env.ATTENDANCE)('do attendance', () => {
-
   it('should do arknights attendance', async () => {
     const client = createClient()
 

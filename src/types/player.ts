@@ -282,3 +282,224 @@ export interface PlayerInfo {
     }
   }[]
 }
+
+export interface EndfieldDetails {
+  achieve: {
+    achieveMedals: unknown[]
+    count: number
+    display: unknown
+  }
+  base: {
+    avatarUrl: string
+    charNum: number
+    /** unix timestamp */
+    createTime: string
+    docNum: number
+    exp: number
+    gender: number
+    /** unix timestamp */
+    lastLoginTime: string
+    level: number
+    mainMission: {
+      description: string
+      id: string
+    }
+    name: string
+    roleId: string
+    /** unix timestamp */
+    saveTime: string
+    serverName: string
+    weaponNum: number
+    worldLevel: number
+  }
+  bpSystem: {
+    curLevel: number
+    maxLevel: number
+  }
+  chars: {
+    gender: 'CHAR_GENDER_FEMALE'
+    id: string
+    level: number
+    /** unix timestamp */
+    ownTs: string
+    potentialLevel: number
+    evolvePhase: number
+    armEquip: EndfieldEquipment
+    bodyEquip: EndfieldEquipment
+    secondAccessory: EndfieldEquipment
+    weapon: {
+      breakthroughLevel: number
+      gem: {
+        icon: string
+        id: string
+      }
+      level: number
+      refineLevel: number
+      weaponData: {
+        description: string
+        function: string
+        iconUrl: string
+        id: string
+        name: string
+        rarity: EndfieldEnumItem
+        skills: EndfieldEnumItem[]
+        type: EndfieldEnumItem
+      }
+    }
+    charData: {
+      avatarRtUrl: string
+      avatarSqUrl: string
+      id: string
+      illustrationUrl: string
+      labelType: string
+      name: string
+      profession: EndfieldEnumItem
+      property: EndfieldEnumItem
+      rarity: EndfieldEnumItem
+      skills: Array<{
+        desc: string
+        descLevelParams: Record<string, {
+          level: string
+          params: {
+            atb: string
+            atk_scale: string
+            display_atk_scale: string
+            poise: string
+          }
+        }>
+        descParams: unknown
+        iconUrl: string
+        id: string
+        name: string
+        property: EndfieldEnumItem
+        type: EndfieldEnumItem
+      }>
+      tags: string[]
+      weaponType: EndfieldEnumItem
+    }
+    tacticalItem: {
+      id: string
+      name: string
+      iconUrl: string
+      rarity: EndfieldEnumItem
+      activeEffectType: EndfieldEnumItem
+      activeEffect: string
+      passiveEffect: string
+      activeEffectParams: Record<string, string>
+      passiveEffectParams: Record<string, string>
+    }
+    userSkills: Record<string, {
+      level: number
+      maxLevel: number
+      skillId: string
+    }>
+  }[]
+  config: {
+    charIds: string[]
+    charSwitch: boolean
+  }
+  /** unix timestamp */
+  currentTs: string
+  dailyMission: {
+    dailyActivation: number
+    maxDailyActivation: number
+  }
+  domain: {
+    collections: {
+      blackboxCount: number
+      levelId: string
+      pieceCount: number
+      puzzleCount: number
+      trchestCount: number
+    }[]
+    domainId: string
+    factory: null
+    level: number
+    moneyMgr: string
+    name: string
+    dungeon: {
+      curStamina: string
+      maxStamina: string
+      /** unix timestamp */
+      maxTs: string
+    }
+    settlements: {
+      id: string
+      level: number
+      name: string
+      officerCharIds: string
+      remainMoney: string
+    }[]
+    quickaccess: {
+      icon: string
+      link: string
+      name: string
+    }[]
+
+    spaceShip: {
+      rooms: {
+        chars: {
+          charId: string
+          favorability: number
+          physicalStrength: number
+        }[]
+        id: string
+        level: number
+        reports: {
+          [createdTimeTs: string]: {
+            char: string[]
+            /** unix timestamp */
+            createdTimeTs: string
+            output: {
+              [itemId: string]: number
+            }
+          }
+        }
+        type: number
+      }[]
+    }
+  }[]
+}
+
+export interface EndfieldEnumItem {
+  key: string
+  value: string
+}
+
+export interface EndfieldEquipment {
+  equipData: {
+    function: string
+    iconUrl: string
+    id: string
+    isAccessory: boolean
+    level: {
+      key: string
+      value: string
+    }
+    name: string
+    pkg: string
+    properties: string[]
+    rarity: {
+      key: string
+      value: string
+    }
+    suit: {
+      id: string
+      name: string
+      skillDesc: string
+      skillDescParams: {
+        atk_up: string
+        crit_up: string
+        crit_up2: string
+        duration: string
+        max_stack: string
+      }
+      skillId: string
+    }
+    type: {
+      key: string
+      value: string
+    }
+  }
+  equipId: string
+}
