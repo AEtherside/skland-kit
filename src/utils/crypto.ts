@@ -1,10 +1,10 @@
 import * as mima from 'mima-kit'
 
-export async function md5(string: string): Promise<string> {
+export function md5(string: string): string {
   return mima.md5(mima.UTF8(string)).to(mima.HEX)
 }
 
-export async function hmacSha256(key: string, data: string): Promise<string> {
+export function hmacSha256(key: string, data: string): string {
   const hmac256 = mima.hmac(mima.sha256)
   return hmac256(mima.UTF8(key), mima.UTF8(data)).to(mima.HEX)
 }

@@ -35,7 +35,7 @@ export async function signRequest(ctx: FetchContext, storage: Storage<string>): 
 
   const str = `${parsedURL.pathname}${query}${ctx.options.body ? JSON.stringify(ctx.options.body) : ''}${timestamp}${JSON.stringify(signatureHeaders)}`
 
-  const signature = await md5(await hmacSha256(token, str))
+  const signature = md5(hmacSha256(token, str))
 
   Object.entries(signatureHeaders).forEach(([key, value]) => {
     headers.append(key, value)
