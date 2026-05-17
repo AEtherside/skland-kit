@@ -1,12 +1,156 @@
 import * as mima from 'mima-kit'
 
+const PEM_PUBLIC_KEY_HEADER_RE = /-----BEGIN PUBLIC KEY-----/
+const PEM_PUBLIC_KEY_FOOTER_RE = /-----END PUBLIC KEY-----/
+const WHITESPACE_RE = /\s/g
+const BASE64URL_DASH_RE = /-/g
+const BASE64URL_UNDERSCORE_RE = /_/g
+const MD5_SHIFT = [
+  7,
+  12,
+  17,
+  22,
+  7,
+  12,
+  17,
+  22,
+  7,
+  12,
+  17,
+  22,
+  7,
+  12,
+  17,
+  22,
+  5,
+  9,
+  14,
+  20,
+  5,
+  9,
+  14,
+  20,
+  5,
+  9,
+  14,
+  20,
+  5,
+  9,
+  14,
+  20,
+  4,
+  11,
+  16,
+  23,
+  4,
+  11,
+  16,
+  23,
+  4,
+  11,
+  16,
+  23,
+  4,
+  11,
+  16,
+  23,
+  6,
+  10,
+  15,
+  21,
+  6,
+  10,
+  15,
+  21,
+  6,
+  10,
+  15,
+  21,
+  6,
+  10,
+  15,
+  21,
+]
+const MD5_K = Array.from({ length: 64 }, (_, i) => Math.floor(Math.abs(Math.sin(i + 1)) * 2 ** 32) >>> 0)
+
+function rotateLeft(value: number, shift: number): number {
+  return (value << shift) | (value >>> (32 - shift))
+}
+
+function toHexWord(value: number): string {
+  return [0, 8, 16, 24]
+    .map(shift => ((value >>> shift) & 0xFF).toString(16).padStart(2, '0'))
+    .join('')
+}
+
 export function md5(string: string): string {
-  return mima.md5(mima.UTF8(string)).to(mima.HEX)
+  const bytes = new TextEncoder().encode(String(string))
+  const padded = new Uint8Array(((bytes.length + 9 + 63) >>> 6) << 6)
+  padded.set(bytes)
+  padded[bytes.length] = 0x80
+
+  const bitLength = BigInt(bytes.length) * 8n
+  for (let i = 0; i < 8; i++) {
+    padded[padded.length - 8 + i] = Number((bitLength >> BigInt(8 * i)) & 0xFFn)
+  }
+
+  let a0 = 0x67452301
+  let b0 = 0xEFCDAB89
+  let c0 = 0x98BADCFE
+  let d0 = 0x10325476
+
+  for (let offset = 0; offset < padded.length; offset += 64) {
+    const words = new Uint32Array(16)
+    for (let i = 0; i < 16; i++) {
+      const index = offset + i * 4
+      words[i] = padded[index] | (padded[index + 1] << 8) | (padded[index + 2] << 16) | (padded[index + 3] << 24)
+    }
+
+    let a = a0
+    let b = b0
+    let c = c0
+    let d = d0
+
+    for (let i = 0; i < 64; i++) {
+      let f: number
+      let g: number
+
+      if (i < 16) {
+        f = (b & c) | (~b & d)
+        g = i
+      }
+      else if (i < 32) {
+        f = (d & b) | (~d & c)
+        g = (5 * i + 1) % 16
+      }
+      else if (i < 48) {
+        f = b ^ c ^ d
+        g = (3 * i + 5) % 16
+      }
+      else {
+        f = c ^ (b | ~d)
+        g = (7 * i) % 16
+      }
+
+      const next = d
+      d = c
+      c = b
+      b = (b + rotateLeft((a + f + MD5_K[i] + words[g]) >>> 0, MD5_SHIFT[i])) >>> 0
+      a = next
+    }
+
+    a0 = (a0 + a) >>> 0
+    b0 = (b0 + b) >>> 0
+    c0 = (c0 + c) >>> 0
+    d0 = (d0 + d) >>> 0
+  }
+
+  return [a0, b0, c0, d0].map(toHexWord).join('')
 }
 
 export function hmacSha256(key: string, data: string): string {
   const hmac256 = mima.hmac(mima.sha256)
-  return hmac256(mima.UTF8(key), mima.UTF8(data)).to(mima.HEX)
+  return hmac256(mima.UTF8(String(key)), mima.UTF8(data)).to(mima.HEX)
 }
 
 /**
@@ -92,9 +236,9 @@ export async function encryptObjectByDESRules(object: Record<string, string | nu
 export async function extractJWKFromPEM(publicKeyPEM: string): Promise<{ n: bigint, e: bigint }> {
   // 移除PEM头尾和换行，并进行base64解码
   const pemContents = publicKeyPEM
-    .replace('-----BEGIN PUBLIC KEY-----', '')
-    .replace('-----END PUBLIC KEY-----', '')
-    .replace(/\s/g, '')
+    .replace(PEM_PUBLIC_KEY_HEADER_RE, '')
+    .replace(PEM_PUBLIC_KEY_FOOTER_RE, '')
+    .replace(WHITESPACE_RE, '')
 
   const binaryDer = atob(pemContents)
   const derBuffer = new Uint8Array(binaryDer.length)
@@ -126,8 +270,8 @@ export async function extractJWKFromPEM(publicKeyPEM: string): Promise<{ n: bigi
 export function base64URLToBigInt(base64url: string): bigint {
   // 1. Base64URL 转 Base64
   const base64 = base64url
-    .replace(/-/g, '+')
-    .replace(/_/g, '/')
+    .replace(BASE64URL_DASH_RE, '+')
+    .replace(BASE64URL_UNDERSCORE_RE, '/')
     .padEnd(Math.ceil(base64url.length / 4) * 4, '=')
 
   // 2. Base64 解码为二进制字符串
