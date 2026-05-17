@@ -1,23 +1,40 @@
 import type { FetchOptions } from 'ofetch'
 import type { HypergrayphonResponse, HypergrayphonSuccessResponse, Hypergryph } from '../../types'
 import defu from 'defu'
+import { SKLAND_APP_CODE } from '../../constants'
+import { getDid } from '../../utils/env'
 import { useClientContext } from '../ctx'
 
 function isSuccessResponse(res: HypergrayphonResponse): res is HypergrayphonSuccessResponse {
-  if (typeof res.data === 'undefined'
+  if (
+    typeof res.data === 'undefined'
     || typeof res.status === 'undefined'
     || typeof res.type === 'undefined'
   ) {
     return false
   }
 
-  if (res.msg !== 'OK' || res.status !== 0) return false
+  if (res.msg !== 'OK' || res.status !== 0)
+    return false
 
   return true
 }
 
+function parseOAuthToken(input: string): string {
+  const token = input.trim()
+
+  try {
+    const parsed = JSON.parse(token)
+    if (typeof parsed?.data?.content === 'string')
+      return parsed.data.content
+  }
+  catch {}
+
+  return token
+}
+
 export function buildHypergryphCollection(): Hypergryph {
-  const { $fetch } = useClientContext()
+  const { $fetch, storage } = useClientContext()
   const $fetchHypergryph = $fetch.create({
     baseURL: 'https://as.hypergryph.com',
   })
@@ -28,8 +45,14 @@ export function buildHypergryphCollection(): Hypergryph {
     options: FetchOptions<'json'>,
     errorMessage: string,
   ): Promise<HypergrayphonSuccessResponse<T>> {
+    const headers = new Headers(options.headers)
+    headers.set('user-agent', 'Mozilla/5.0 (Linux; Android 12; SM-A5560 Build/V417IR; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36; SKLand/1.52.1')
+    headers.set('dId', await getDid(storage))
+    headers.set('x-requested-with', 'com.hypergryph.skland')
+
     const res = await $fetchHypergryph<HypergrayphonResponse<T>>(url, {
       ...options,
+      headers,
       onResponseError(ctx) {
         throw new Error(`【skland-kit】${errorMessage}`, { cause: ctx.response._data })
       },
@@ -52,7 +75,7 @@ export function buildHypergryphCollection(): Hypergryph {
     async generateScanLoginUrl() {
       const res = await fetchHypergryph<{ scanId: string, scanUrl: string }>(
         '/general/v1/gen_scan/login',
-        { method: 'POST', body: { appCode: '4ca99fa6b56cc2ba' } },
+        { method: 'POST', body: { appCode: SKLAND_APP_CODE } },
         '生成扫码登录 URL 错误',
       )
       return res.data
@@ -75,7 +98,7 @@ export function buildHypergryphCollection(): Hypergryph {
     },
     async getOAuthTokenByPhoneCode(data: { phone: string, code: string }) {
       const res = await fetchHypergryph<{ token: string }>(
-        '/user/auth/v1/token_by_phone_code',
+        '/user/auth/v2/token_by_phone_code',
         { method: 'POST', body: data },
         '通过手机号和验证码获取鹰角 OAuth token 错误',
       )
@@ -90,11 +113,11 @@ export function buildHypergryphCollection(): Hypergryph {
       return res.data.token
     },
     async grantAuthorizeCode(token: string, options?: { appCode?: string, type?: number }) {
-      const { appCode, type } = defu(options, { appCode: '4ca99fa6b56cc2ba', type: 0 })
+      const { appCode, type } = defu(options, { appCode: SKLAND_APP_CODE, type: 0 })
 
       const res = await fetchHypergryph<{ code: string, uid: string }>(
         '/user/oauth2/v2/grant',
-        { method: 'POST', body: { appCode, token, type } },
+        { method: 'POST', body: { appCode, token: parseOAuthToken(token), type } },
         '通过 OAuth 登录凭证验证鹰角网络通行证错误',
       )
 

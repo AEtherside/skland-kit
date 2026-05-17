@@ -22,15 +22,24 @@ export async function signRequest(ctx: FetchContext, storage: Storage<string>): 
   const parsedURL = parseURL(ctx)
   const headers = new Headers(ctx.options.headers)
 
+  if (!headers.has('user-agent'))
+    headers.set('user-agent', 'Mozilla/5.0 (Linux; Android 12; SM-A5560 Build/V417IR; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/101.0.4951.61 Safari/537.36; SKLand/1.52.1')
+  if (!headers.has('accept-encoding'))
+    headers.set('accept-encoding', 'gzip')
+  if (!headers.has('connection'))
+    headers.set('connection', 'close')
+  if (!headers.has('x-requested-with'))
+    headers.set('x-requested-with', 'com.hypergryph.skland')
+
   const query = new URLSearchParams(ctx.options.query ?? {}).toString()
 
   const timestamp = (Date.now() - SERVER_TIMESTAMP_OFFSET).toString().slice(0, -3)
 
   const signatureHeaders = {
-    platform: '1',
+    platform: '3',
     timestamp,
     dId: await getDid(storage),
-    vName: '1.21.0',
+    vName: '1.0.0',
   }
 
   const str = `${parsedURL.pathname}${query}${ctx.options.body ? JSON.stringify(ctx.options.body) : ''}${timestamp}${JSON.stringify(signatureHeaders)}`
@@ -38,10 +47,10 @@ export async function signRequest(ctx: FetchContext, storage: Storage<string>): 
   const signature = md5(hmacSha256(token, str))
 
   Object.entries(signatureHeaders).forEach(([key, value]) => {
-    headers.append(key, value)
+    headers.set(key, value)
   })
-  headers.append('sign', signature)
-  headers.append('cred', cred)
+  headers.set('sign', signature)
+  headers.set('cred', cred)
 
   ctx.options.headers = headers
 }

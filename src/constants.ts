@@ -1,4 +1,9 @@
-export const SERVER_TIMESTAMP_OFFSET = -2 * 1000
+/**
+ * 森空岛签名时间向前偏移，规避服务端时间校验过严导致的误判。
+ */
+export const SERVER_TIMESTAMP_OFFSET = 2 * 1000
+
+export const SKLAND_APP_CODE = '4ca99fa6b56cc2ba'
 
 /**
  * 森空岛访问 token

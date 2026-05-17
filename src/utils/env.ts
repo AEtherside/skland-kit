@@ -190,7 +190,9 @@ export const sign_header = {
   vName: '1.21.0',
 }
 
-const stringify = (obj: any) => JSON.stringify(obj).replace(/":"/g, '": "').replace(/","/g, '", "')
+const JSON_COLON_RE = /":"/g
+const JSON_COMMA_RE = /","/g
+const stringify = (obj: any) => JSON.stringify(obj).replace(JSON_COLON_RE, '": "').replace(JSON_COMMA_RE, '", "')
 
 export async function gzipObject(o: object): Promise<string> {
   // 将对象转换为字节数组
@@ -331,5 +333,8 @@ export async function getDid(storage: Storage<string>): Promise<string> {
     throw new Error('did计算失败，请联系作者')
   }
 
-  return `B${resp.detail.deviceId}`
+  const did = `B${resp.detail.deviceId}`
+  await storage.setItem(STORAGE_DID_KEY, did)
+
+  return did
 }

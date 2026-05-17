@@ -60,8 +60,6 @@ export function createClient(config: ClientConfig = {}): Client {
     const cred = await storage.getItem(STORAGE_CREDENTIAL_KEY)
     assert(cred, '【skland-kit】cred 未获取')
 
-    const did = await getDid(storage)
-
     const data = await $fetch<SklandResponse<{ token: string }>>(
       `/web/v1/auth/refresh`,
       {
@@ -70,10 +68,6 @@ export function createClient(config: ClientConfig = {}): Client {
           'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
           'referer': 'https://www.skland.com/',
           'origin': 'https://www.skland.com',
-          'dId': did,
-          'platform': '3',
-          'timestamp': `${Math.floor(Date.now() / 1000)}`,
-          'vName': '1.0.0',
         },
         onRequest: ctx => signRequest(ctx, storage),
       },
