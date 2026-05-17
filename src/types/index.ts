@@ -10,7 +10,7 @@ export interface SklandResponse<T> {
   data: T
 }
 
-export type HypergrayphonResType = "A" | "C1" | (string & {})
+export type HypergrayphonResType = 'A' | 'C1' | (string & {})
 
 export interface HypergrayphonBaseResponse<Data = any> {
   status?: number
@@ -31,7 +31,7 @@ export interface HypergrayphonFailResponse extends HypergrayphonBaseResponse {
 
 export interface HypergrayphonSuccessResponse<Data = any> extends HypergrayphonBaseResponse<Data> {
   status: 0
-  /** 
+  /**
    * @description 一般都会是 "A" 不确定，别的够检测了
    */
   type: HypergrayphonResType
