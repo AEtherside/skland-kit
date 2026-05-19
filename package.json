@@ -2,7 +2,7 @@
   "name": "skland-kit",
   "type": "module",
   "version": "0.3.4",
-  "packageManager": "pnpm@10.33.4",
+  "packageManager": "pnpm@11.1.3",
   "description": "A client for Skland, a game by Hypergryph.",
   "author": "enpitsulin<enpitsulin@gmail.com>",
   "license": "MIT",
@@ -49,20 +49,20 @@
     "prepublishOnly": "pnpm run build"
   },
   "dependencies": {
-    "date-fns": "^4.1.0",
+    "date-fns": "^4.2.1",
     "defu": "^6.1.7",
-    "mima-kit": "^0.1.1",
+    "mima-kit": "^0.1.2",
     "ofetch": "^1.5.1",
     "unctx": "^2.5.0",
     "unstorage": "^1.17.5"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^7.7.3",
-    "@types/node": "^25.8.0",
+    "@antfu/eslint-config": "^9.0.0",
+    "@types/node": "^25.9.0",
     "bumpp": "^11.1.0",
     "eslint": "^10.4.0",
     "tsdown": "^0.22.0",
-    "tsx": "^4.22.1",
+    "tsx": "^4.22.2",
     "typescript": "^6.0.3",
     "vitest": "^4.1.6"
   }

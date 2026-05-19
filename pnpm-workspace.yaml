@@ -1,0 +1,7 @@
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - '@types/node@25.9.0'
+  - date-fns@4.2.1
+  - mima-kit@0.1.2
+  - tsx@4.22.2
